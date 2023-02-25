@@ -1,0 +1,321 @@
+﻿@model IEnumerable<ClassControl.Domain.Entities.AlunosEntity>
+@{
+    ViewBag.Title = "Alunos";
+    var materias = ViewBag.Materias;
+}
+
+<html>
+<head>
+    <link href="~/src/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+
+</head>
+<div id="notification" class="alert alert-success fixed-top float-right m-3" role="alert" style="display: none;">
+    Aluno Inserido com Sucesso
+</div>
+<div id="notificationError" class="alert alert-danger fixed-top float-right m-3" role="alert" style="display: none;">
+    Falha ao Inserir o Aluno, revise os dados
+</div>
+<body>
+    <h2>Alunos</h2>
+    <div class="card">
+        <div class="card-head m-3">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Adicionar Aluno
+            </button>
+
+        </div>
+        <div class="card-body">
+            <table id="example" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Nome</td>
+                            <td>@item.Email</td>
+                            <td>
+                                <a onclick="abrirModalEditar(@item.ID)" style="cursor: pointer;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                                    </svg>
+                                </a>
+                                <a onclick="ExcluirAluno(@item.ID)" style="cursor: pointer;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                    </svg>
+                                </a>
+                                <a onclick="abrirModalVincular(@item.ID)" style="cursor: pointer;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link" viewBox="0 0 16 16">
+                                        <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
+                                        <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+
+
+<!--Modais-->
+<div>
+    <!-- Modal Adicionar Aluno -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Adicionar Aluno</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span class="mt-3">Nome do Aluno</span>
+                    <input type="text" class="form-control" id="nome" />
+                    <span class="mt-3">Email do Aluno</span>
+                    <input type="text" class="form-control" id="email" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="AdicionarAluno()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Editar Aluno -->
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Editar Aluno</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span class="mt-3">Nome do Aluno</span>
+                    <input type="text" class="form-control" id="nomeEdit" />
+                    <span class="mt-3">Email do Aluno</span>
+                    <input type="text" class="form-control" id="emailEdit" />
+                    <input type="text" class="form-control" id="IDEdit" hidden />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarEdicao()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Para Vincular Matéria -->
+    <div class="modal fade" id="modalVinculo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Vinculas Matérias</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span class="mt-3">Selecione a Materia para vincular</span>
+                    <table style="height: 20px; overflow-y: scroll;" id="materiasSelecionadas">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var i in materias)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" id="@i.ID"></td>
+                                    <td>@i.Nome</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <input type="text" class="form-control" id="IDAluno" hidden />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="VincularMaterias() ()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+<style>
+    #modalVinculo .modal-dialog {
+        max-width: 40%;
+        height: 40%;
+    }
+
+    #modalVinculo .modal-content {
+        height: 100%;
+        overflow-y: auto;
+    }
+</style>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    var ids = [];
+    $(document).ready(function () {
+
+        $('#example').DataTable({
+
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.2/i18n/pt-BR.json"
+            }
+        });
+        $("select").each(function () {
+            $(this)
+                .wrap("<div class=\"position-relative\"></div>")
+                .select2({
+                    placeholder: "Selecione pelo menos um",
+                    dropdownParent: $(this).parent()
+                });
+        });
+        $('#materiasSelecionadas').on('change', 'input[type=checkbox]', function () {
+            var id = $(this).attr('id');
+
+            if ($(this).is(':checked')) {
+                // Adiciona o ID na lista se o checkbox foi marcado
+                ids.push(id);
+            } else {
+                // Remove o ID da lista se o checkbox foi desmarcado
+                ids = ids.filter(function (value) {
+                    return value !== id;
+                });
+            }
+
+            console.log(ids); // array com os IDs dos checkboxes marcados
+        });
+    });
+
+    function VincularMaterias() {
+        $.ajax({
+            url: 'https://localhost:7149' + '/Materias/VincularMaterias',
+            method: 'POST',
+            data: {
+                ids: ids, alunoID: $('#IDAluno').val()
+            }
+        }).then(function (response) {
+
+            if (response.success == true) {
+                $("#modalVinculo").modal("hide");
+                exibirAlertaBootstrap("Matérias vinculadas com sucesso!", "alert-success");
+            }
+            else {
+                exibirAlertaBootstrap("Erro ao tentar vincular as matérias: " + response.message, "alert-danger");
+            }
+
+        });
+    }
+
+
+    function AdicionarAluno() {
+        var AlunosEntity = {
+            Nome: $('#nome').val(),
+            Email: $('#email').val()
+        }
+        $.ajax({
+            url: 'https://localhost:7149' + '/Aluno/AdicionarAluno',
+            method: 'POST',
+            data: {
+                aluno: AlunosEntity
+            }
+        }).then(function (response) {
+
+            if (response.success == true) {
+                $("#exampleModal").modal("hide");
+                exibirAlertaBootstrap("Aluno adicionado com sucesso!", "alert-success");
+            }
+            else {
+                exibirAlertaBootstrap("Falha ao tentar adicionar um aluno " + response.message, "alert-danger");
+            }
+
+        });
+    }
+    function ExcluirAluno(id) {
+        $.ajax({
+            url: 'https://localhost:7149' + '/Aluno/ExcluirAluno',
+            method: 'POST',
+            data: {
+                id: id
+            }
+        }).then(function (response) {
+
+            if (response.success == true) {
+                  exibirAlertaBootstrap("Aluno excluido com sucesso!", "alert-success");
+            }
+            else {
+                    exibirAlertaBootstrap("Falha ao tentar excluir um aluno " + response.message, "alert-danger");
+            }
+
+        });
+    }
+    function abrirModalEditar(id) {
+        $('#modalEditar').modal('show');
+        $.ajax({
+            url: 'https://localhost:7149' + '/Aluno/BuscarPorID',
+            method: 'POST',
+            data: {
+                id: id
+            }
+        }).then(function (response) {
+            if (response.success == true) {
+                $('#nomeEdit').val(response.object.nome);
+                $('#IDEdit').val(id);
+                $('#emailEdit').val(response.object.email);
+            }
+            else {
+                $('#notificationError').fadeIn();
+                setTimeout(function () {
+                    $('#notificationError').fadeOut();
+                }, 3000);
+            }
+
+        });
+    }
+    function abrirModalVincular(id) {
+        $('#modalVinculo').modal('show');
+        $('#IDAluno').val(id);
+
+    }
+    function salvarEdicao() {
+        var AlunosEntity = {
+            Nome: $('#nomeEdit').val(),
+            Email: $('#emailEdit').val(),
+            ID: $('#IDEdit').val()
+        }
+        $.ajax({
+            url: 'https://localhost:7149' + '/Aluno/EditarAluno',
+            method: 'POST',
+            data: {
+                aluno: AlunosEntity
+            }
+        }).then(function (response) {
+
+            if (response.success == true) {
+                $("#modalEditar").modal("hide");
+                exibirAlertaBootstrap("Aluno editado com sucesso!", "alert-success");
+            }
+            else {
+                exibirAlertaBootstrap("Falha ao tentar editar um aluno " + response.message, "alert-danger");
+            }
+
+        });
+    }
+
+</script>

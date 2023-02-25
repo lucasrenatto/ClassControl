@@ -1,0 +1,305 @@
+﻿@model IEnumerable<ClassControl.Domain.Entities.NotasEntity>
+@{
+    ViewBag.Title = "Notas";
+    var materias = ViewBag.Materias;
+    var alunos = ViewBag.Alunos;
+}
+
+<html>
+<head>
+    <link href="~/src/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+</head>
+<body>
+    <h2>Banco de Notas</h2>
+    <div class="card">
+        <div class="card-head m-3">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Adicionar Nota
+            </button>
+
+        </div>
+        <div class="card-body">
+            <table id="example" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Matéria</th>
+                        <th>Nota</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Vinculo.Aluno.Nome</td>
+                            <td>@item.Vinculo.Materia.Nome</td>
+                            <td><strong>@item.NotaString</strong></td>
+                            <td>
+                                <a href="#" onclick="AbrirModalEditar(@item.ID)" style="cursor:pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                                    </svg>
+                                </a>
+                                <a href="#" onclick="ExcluirNota(@item.ID)" style="cursor:pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+<!--Modais-->
+<div>
+    <!-- Modal Adicionar Aluno -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Adicionar Nota</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="listaAlunos" style="display:block">Selecione o Aluno</label>
+                        <select class="form-select form-control" aria-label="Default select example" id="listaAlunos" style="width:400px;" onchange="selecionarAluno()">
+                            <option selected value="0">Selecione um Aluno</option>
+                            @foreach (var aluno in alunos)
+                            {
+                                <option value="@aluno.ID">@aluno.Nome</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mt-3">
+                        <span style="display:block">Selecione a Matéria</span>
+                        <select class="form-select" aria-label="Default select example" id="listaMaterias" disabled style="width:400px;">
+                            <option selected value="0">Selecione uma Matéria </option>
+                        </select>
+                    </div>
+                    <div class="mt-3">
+                        <label>Nota</label>
+                        <input type="text" id="nota" maxlength="5" pattern="[0-9]{2}\.[0-9]{2}" title="Digite um número no formato xx.xx" class="form-control">
+                    </div>
+                    <div class="mt-3">
+                        <label>Data</label>
+                        <input type="date" class="form-control" id="data" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="AdicionarNota()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Editar Aluno -->
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Editar Nota</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span class="mt-3">Nome do Aluno</span>
+                    <input type="text" class="form-control" id="nomeEdit" disabled />
+                    <span class="mt-3">Nome da Matéria</span>
+                    <input type="text" class="form-control" id="materiaEdit" disabled />
+                    <span class="mt-3">Nota</span>
+                    <input type="text" class="form-control" id="notaEdit" />
+                    <span class="mt-3">Data</span>
+                    <input type="text" class="form-control" id="dataEdit" disabled />
+                    <input type="text" class="form-control" id="IDEdit" hidden />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="SalvarEdicao()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#example').DataTable({
+
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.2/i18n/pt-BR.json"
+            }
+
+        });
+
+        $("select").each(function () {
+            $(this)
+                //.wrap("<div class=\"position-relative\"></div>")
+                .select2({
+                    placeholder: "Selecione pelo menos um",
+                    dropdownParent: $(this).parent()
+                });
+        });
+        $('#nota').mask('99,99', {
+            translation: {
+                '9': {
+                    pattern: /[0-9]/,
+                    optional: false
+                }
+            }
+        });
+    });
+    function selecionarAluno() {
+        var selectElement = document.getElementById("listaAlunos");
+        var materia = document.getElementById("listaMaterias");
+        var selectedValue = selectElement.value;
+        if (selectedValue != 0) {
+            materia.removeAttribute('disabled');
+            $.ajax({
+                url: 'https://localhost:7149' + '/Materias/BuscarMateriasVinculadas',
+                method: 'POST',
+                data: {
+                    alunoID: selectedValue
+                }
+            }).then(function (response) {
+
+                if (response.success == true) {
+                    if (response.object.length > 0) {
+                        while (materia.options.length > 1) {
+                            materia.remove(1);
+                        }
+                        for (var i = 0; i < response.object.length; i++) {
+                            var novaOpcao = document.createElement("option");
+                            novaOpcao.text = response.object[i].materia.nome;
+                            novaOpcao.value = response.object[i].id;
+                            materia.add(novaOpcao);
+                        }
+                    }
+                    else {
+                        materia.setAttribute('disabled', true);
+                    }
+                }
+                else {
+                    $('#notificationError').fadeIn();
+                    setTimeout(function () {
+                        $('#notificationError').fadeOut();
+                    }, 3000);
+                }
+
+            });
+        }
+        else
+            materia.setAttribute('disabled', true);
+    }
+    function AdicionarNota() {
+        console.log("Chegou")
+        var aluno = $('#listaAlunos :selected').val();
+        var materia = $('#listaMaterias :selected').val();
+        console.log(aluno);
+        console.log(materia);
+        if (aluno == 0)
+            exibirAlertaBootstrap("Você deve selecionar um(a) aluno(a) ", "alert-danger");
+        if (materia == 0)
+            exibirAlertaBootstrap("Você deve selecionar uma matéria ", "alert-danger");
+        if (aluno > 0 && materia > 0) {
+            var NotasEntity = {
+                NotaString: $('#nota').val(),
+                Data: $('#data').val(),
+                VinculoID: $('#listaMaterias :selected').val()
+            }
+            $.ajax({
+                url: 'https://localhost:7149' + '/Notas/AdicionarNota',
+                method: 'POST',
+                data: {
+                    nota: NotasEntity
+                }
+            }).then(function (response) {
+
+                if (response.success == true) {
+                    $("#exampleModal").modal("hide");
+                    exibirAlertaBootstrap("Nota Inserida com Sucesso!", "alert-success");
+                }
+                else {
+                    exibirAlertaBootstrap("Não foi possível inserir uma nota ", "alert-danger");
+
+                };
+            });
+        }
+    }
+    function ExcluirNota(id) {
+        $.ajax({
+            url: 'https://localhost:7149' + '/Notas/ExcluirNota',
+            method: 'POST',
+            data: {
+                id: id
+            }
+        }).then(function (response) {
+
+            if (response.success == true) {
+                exibirAlertaBootstrap("Nota Excluida com Sucesso!", "alert-success");
+            }
+            else {
+                exibirAlertaBootstrap("Não foi possível excluir uma nota ", "alert-danger");
+            }
+
+        });
+    }
+    function AbrirModalEditar(id) {
+        $('#modalEditar').modal('show');
+        $.ajax({
+            url: 'https://localhost:7149' + '/Notas/BuscarPorID',
+            method: 'POST',
+            data: {
+                ID: id
+            }
+        }).then(function (response) {
+
+            if (response.success == true) {
+                $('#nomeEdit').val(response.object.vinculo.aluno.nome);
+                $('#materiaEdit').val(response.object.vinculo.materia.nome);
+                $('#notaEdit').val(response.object.nota);
+                $('#dataEdit').val(response.object.data);
+                $('#IDEdit').val(id);
+            }
+            else {
+                exibirAlertaBootstrap("Não foi possível inserir uma nota ", "alert-danger");
+
+            };
+        });
+    }
+    function SalvarEdicao() {
+        var NotasEntity = {
+            NotaString: $('#notaEdit').val(),
+            Data: $('#dataEdit').val(),
+            ID: $('#IDEdit').val()
+        }
+        $.ajax({
+            url: 'https://localhost:7149' + '/Notas/EditarNota',
+            method: 'POST',
+            data: {
+                nota: NotasEntity
+            }
+        }).then(function (response) {
+
+            if (response.success == true) {
+                exibirAlertaBootstrap("Nota editada com sucesso! ", "alert-success");
+            }
+            else {
+                exibirAlertaBootstrap("Não foi possível inserir uma nota ", "alert-danger");
+
+            };
+        });
+    }
+</script>
